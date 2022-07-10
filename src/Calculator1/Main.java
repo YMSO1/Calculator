@@ -3,19 +3,25 @@ package Calculator1;
 import java.util.Objects;
 import java.util.Scanner;
 
-public class Main {
-    public static void main(String[] args) {
+public class  Main {
+    public static void main(String[] args) throws RuntimeException {
         while (true) {                                                                                                  // что бы не выходила из программы после решения
             System.out.println("input");                                                                                // вывод в консоль слова input
             Scanner scanner = new Scanner(System.in);                                                                   // создали переменную scanner класса Scanner с системой ввода с консоли
-            String input = scanner.nextLine();                                                                          //    переменной input присваиваем введённое значение в виде строки
+            String input = scanner.nextLine();                                                                          // переменной input присваиваем введённое значение в виде строки
 
-            System.out.println("output");                                                                               //  выводим в консоль строку output переносим на новую строку результат из метода calc
-            System.out.println(calc(input));                                                                            // передаём введённую строку в calc и выводим результат из метода calc
+            System.out.println("output");                                                                               // выводим в консоль строку output переносим на новую строку результат из метода calc
+            System.out.println(calc(input));                                                                            // передаём введённую строку в calc и выводим в консоль результат из метода calc
         }
     }
     public static String calc(String input) {                                                                           // создали метод calc, который принимает строку с именем input
         String[] parts = input.split(" ");                                                                              //  разделяем строку input по пробелам и заполняем массив parts
+        if (parts.length > 3){                                                                                          //  если ввели больше параметров выбрасываем ошибку
+            throw new RuntimeException("формат математической операции не удовлетворяет заданию - два операнда и один оператор (+, -, /, *)");
+        }
+        if (parts.length < 3){                                                                                          //  если меньше - тоже
+            throw new RuntimeException("строка не является математической операцией");
+        }
         String value1 = parts[0];                                                                                       //  присваеваем первому элементу массива имя value1
         int digitValue1 = 0;
         String value2 = parts[2];                                                                                       //  присваеваем третьему элементу массива имя value2
@@ -26,34 +32,41 @@ public class Main {
 
             digitValue1 = Integer.parseInt(value1);                                                                     // преобразуем строку value1 в целочисленное digitValue1
             digitValue2 = Integer.parseInt(value2);                                                                     // преобразуем строку value2 в целочисленное digitValue2
-            if (digitValue1 == 0 && digitValue2 > 0 || digitValue1 > 0 && digitValue2 == 0){                            //  если выполняются условия в скобках
-                throw new RuntimeException("Используются одновременно разные системы счисления");                       //  и ошибку с описанием
-            }                                                                                                           //  или продолжаем выполнять код
+                                                                                                                        //  или продолжаем выполнять код
             return operation(digitValue1, digitValue2, operator);                                                       // возвращаем строку на место вызова метода calc
 
         } catch (NumberFormatException e) {                                                                             //  если в строках value1 2 будут не целочисленные значения - выйдет ошибка, которую мы будем обрабатывать следующим образом:
-            String output = new String();                                                                               //  создаём строковую переменную output
-            for (Rome romeNumber : Rome.values()) {                                                                     //  пройдём по енаму, называя каждую константу romeNumber
+            String output = "";                                                                                         //  создаём строковую переменную output
+            for (Rome romeNumber : Rome.values()) {                                                                     //  пройдём по енаму, называя каждое римское число romeNumber
                 if (Objects.equals(value1, romeNumber.name())) {                                                        //  если сравнивая значения объектов они будут равны
                     digitValue1 = romeNumber.romeAnalog;                                                                //  присваиваем целочисленной переменной digitValue1 перевод текущей константы
+                    break;
                 }
             }
-            for (Rome romeNumber : Rome.values()) {
+            if (digitValue1 == 0){                                                                                      //  если выполняются условия значит введённый символ не соответствует римскому числу
+                throw new RuntimeException("Используются одновременно разные системы счисления");                       //  выводим ошибку с описанием
+            }
+            for (Rome romeNumber : Rome.values()) {                                                                     //  пройдём по енаму, называя каждое римское число romeNumber
                 if (Objects.equals(value2, romeNumber.name())) {                                                        //  если сравнивая значения объектов они будут равны
                     digitValue2 = romeNumber.romeAnalog;                                                                //  присваиваем целочисленной переменной digitValue2 перевод текущей константы
+                    break;
                 }
             }
-            if (digitValue1 <= digitValue2 && operator == "-"){
+            if (digitValue2 == 0){                                                                                      //  если выполняются условия значит введённый символ не соответствует римскому числу
+                throw new RuntimeException("Используются одновременно разные системы счисления");                       //  выводим ошибку с описанием
+            }
+            if (digitValue1 <= digitValue2 && operator.equals("-")){                                                    //  на случай если из меньшего римского числа вычитается большее
                 throw new RuntimeException("не бывает отрицательных римских чисел");
             }
-            if (digitValue1 * 2 <= digitValue2 && operator == "/"){
+            if (digitValue1 * 2 <= digitValue2 && operator.equals("/")){                                                //  на случай если при делении после округления получается 0
                 throw new RuntimeException("в римских числах нет 0");
             }
             String resultOperation = operation(digitValue1, digitValue2, operator);                                     //  Создаём строку resultOperation и присваиваем ей значение которое вернёт метод operation. Вызываемому методу мы передаём значения в скобках
             int intResultOperation = Integer.parseInt(resultOperation);                                                 //  преобразуем строку в целочисленную переменную
-            for (Rome roNumber : Rome.values()) {                                                                       //  пройдём по енаму, называя каждую константу roNumber
-                if (intResultOperation == roNumber.romeAnalog) {                                                        //  если целочисленный результат вычислений равен переводу текущей константы
-                    output = roNumber.name();                                                                           //  присваиваем имя в виде строки переменной output
+            for (Rome roNumber : Rome.values()) {                                                                       //  пройдём по енаму, называя каждое римское число - roNumber
+                if (intResultOperation == roNumber.romeAnalog) {                                                        //  если целочисленный результат вычислений равен переводу текущего числа
+                    output = roNumber.name();                                                                           //  присваиваем римское число в виде строки переменной output
+                    break;
                 }
             }
             return output;                                                                                              //   возвращаем значение строки

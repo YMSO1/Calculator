@@ -109,9 +109,9 @@ public class Main {
         String resultOfCalculate = new String();
 
         // для соответствия условиям задачи - ограничиваем возможности программы:
-//        if (number1 <= 0 || number1 > 10 || number2 <= 0 || number2 > 10){
-//            resultOfCalculate = ("числа не соответствуют условиям.");
-//        }else {
+        if (number1 <= 0 || number1 > 10 || number2 <= 0 || number2 > 10){
+            resultOfCalculate = ("числа не соответствуют условиям.");
+        }else {
 
             // в соответствии с арифметическим символом, который ввел пользователь - вычисляем результат
             switch (symbol) {
@@ -130,7 +130,7 @@ public class Main {
                 default:
                     resultOfCalculate = ("введён не верный арифметический символ.");
             }
-//        }
+        }
         return resultOfCalculate;  // возвращаем результат вычисления
     }
 
